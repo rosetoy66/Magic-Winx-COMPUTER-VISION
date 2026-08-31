@@ -32,7 +32,7 @@ while cap.isOpened():
             cx, cy = int(nose.x * w), int(nose.y * h)
             cv2.circle(frame, (cx, cy), 5, (0, 255, 0), -1)
 
-    cv2.imshow('Winx Matcher - Test', frame)
+    cv2.imshow('Quale Winx sei?', frame)
 
     # Premi 'q' per uscire
     if cv2.waitKey(5) & 0xFF == ord('q'):
