@@ -1,46 +1,42 @@
 import cv2
 import mediapipe as mp
-import numpy as np
 
-class FaceLandmarksDetector:
-    def __init__(self, max_num_faces=1, min_detection_confidence=0.5, min_tracking_confidence=0.5):
-        self.mp_face_mesh = mp.solutions.face_mesh
-        self.face_mesh = self.mp_face_mesh.FaceMesh(
-            max_num_faces=max_num_faces,
-            refine_landmarks=True,  # Include i punti fini delle iridi
-            min_detection_confidence=min_detection_confidence,
-            min_tracking_confidence=min_tracking_confidence
-        )
+# Inizializzazione di MediaPipe Face Mesh (per estrarre i colori)
+mp_face_mesh = mp.solutions.face_mesh
+face_mesh = mp_face_mesh.FaceMesh(max_num_faces=1, refine_landmarks=True)
 
-        # Indici dei landmark MediaPipe
-        # Iridi (grazie a refine_landmarks=True)
-        self.LEFT_IRIS = [474, 475, 476, 477]
-        self.RIGHT_IRIS = [469, 470, 471, 472]
-        
-        # Guance / Pelle (zone stabili senza barba/trucco eccessivo)
-        self.CHEEKS_SKIN = [117, 118, 101, 205, 346, 347, 330, 425]
-        
-        # Fronte / Attaccatura capelli (zona superiore)
-        self.FOREHEAD_HAIR = [10, 109, 67, 103, 54, 21, 162, 127]
+# Inizializzazione di MediaPipe Hands (per il cursore del menu)
+mp_hands = mp.solutions.hands
+hands = mp_hands.Hands(max_num_hands=1, min_detection_confidence=0.7)
 
-    def extract_regions(self, frame):
+def process_frame(frame):
+    # Convertiamo in RGB per MediaPipe
+    rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    
+    # 1. --- RILEVAMENTO MANO (CURSORE) ---
+    hand_results = hands.process(rgb_frame)
+    finger_pos = None
+    
+    if hand_results.multi_hand_landmarks:
+        # Prendiamo la prima mano rilevata
+        hand_landmarks = hand_results.multi_hand_landmarks[0]
         h, w, _ = frame.shape
-        # MediaPipe richiede immagini RGB
-        rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        results = self.face_mesh.process(rgb_frame)
-
-        if not results.multi_face_landmarks:
-            return None
-
-        landmarks = results.multi_face_landmarks[0].landmark
-
-        def get_coords(indices):
-            return np.array([(int(landmarks[idx].x * w), int(landmarks[idx].y * h)) for idx in indices])
-
-        coords = {
-            "left_iris": get_coords(self.LEFT_IRIS),
-            "right_iris": get_coords(self.RIGHT_IRIS),
-            "skin": get_coords(self.CHEEKS_SKIN),
-            "hair_zone": get_coords(self.FOREHEAD_HAIR)
+        
+        # Landmark 8 = Punta del dito indice (INDEX_FINGER_TIP)
+        finger_x = int(hand_landmarks.landmark[8].x * w)
+        finger_y = int(hand_landmarks.landmark[8].y * h)
+        finger_pos = (finger_x, finger_y)
+    
+    # 2. --- RILEVAMENTO VOLTO (COLORI) ---
+    face_results = face_mesh.process(rgb_frame)
+    colors = None
+    
+    if face_results.multi_face_landmarks:
+        # MOCKUP: Simuliamo i colori estratti
+        colors = {
+            "eyes": (255, 0, 0),     # Blu
+            "hair": (0, 0, 0),       # Nero
+            "skin": (220, 180, 150)  # Rosa/Pelle
         }
-        return coords
+        
+    return finger_pos, colors
