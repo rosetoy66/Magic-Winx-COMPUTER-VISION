@@ -34,7 +34,7 @@ def main():
 
     while True:
         ret, frame = cap.read()
-        if not ret: 
+        if not ret or frame is None: 
             break
         
         frame = cv2.flip(frame, 1)
@@ -93,8 +93,7 @@ def main():
         elif state == "CALCOLO":
             frame = ui.draw_result_screen(frame, final_winx, final_perc)
             frame = ui.draw_winx_images(frame, final_winx)
-            cv2.rectangle(frame, (config.BTN_AVANTI[0], config.BTN_AVANTI[1]), (config.BTN_AVANTI[2], config.BTN_AVANTI[3]), (0, 150, 255), -1)
-            cv2.putText(frame, "AVANTI", (config.BTN_AVANTI[0] + 25, config.BTN_AVANTI[1] + 40), cv2.FONT_HERSHEY_DUPLEX, 0.7, (255, 255, 255), 1)
+            frame = ui.draw_stats_button(frame)
             
         elif state == "CLASSIFICA":
             frame = ui.draw_ranking_screen(frame, all_results)
@@ -122,13 +121,13 @@ def main():
                     break
                     
             elif state == "CALCOLO":
-                if is_inside_button(finger_pos, config.BTN_AVANTI):
+                if is_inside_button(finger_pos, config.BTN_STATISTICHE):
                     state = "CLASSIFICA"
                     particles.clear()
                     time.sleep(0.5)
                     
             elif state == "CLASSIFICA":
-                if is_inside_button(finger_pos, config.BTN_PROSEGUI):
+                if is_inside_button(finger_pos, config.BTN_AVANTI):
                     state = "FILTRO_ALI"
                     particles.clear()
                     time.sleep(0.5)
@@ -151,7 +150,8 @@ def main():
             p[2] -= config.PARTICLE_DECAY_RATE
         particles = [p for p in particles if p[2] > 0]
 
-        cv2.imshow("Magic Winx: COMPUTER VISION!!", frame)
+        if frame is not None:
+            cv2.imshow("Magic Winx: COMPUTER VISION!!", frame)
         
         # GESTIONE TASTIERA
         key = cv2.waitKey(1) & 0xFF

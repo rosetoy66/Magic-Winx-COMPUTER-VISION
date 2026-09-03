@@ -32,6 +32,11 @@ BORDER_PINK_BGR = (140, 0, 237)
 SHADOW_RGB = (70, 30, 70)
 TEXT_PINK_RGB = (237, 0, 140)
 
+# Colori per il Bottone Statistiche
+BTN_STATS_BG_RGB = (180, 194, 221)
+BTN_STATS_PINK_RGB = (237, 3, 124)
+BTN_STATS_SHADOW_RGB = (0, 0, 0)
+
 # effetti
 CURSOR_PATH = "./assets/cursor.png" # puntatore
 SPARKLE_PATH = "./assets/sparkle.png" # immagine della singola particella scia
@@ -67,9 +72,9 @@ WINX_COLORS_BGR = {
 }
 
 # Coordinate dei nuovi bottoni
-BTN_AVANTI = (40, 400, 200, 460)     # Spostato in basso a SINISTRA
-BTN_PROSEGUI = (460, 400, 620, 460)  # Per passare da CLASSIFICA a FILTRO_ALI
-BTN_MENU = (20, 20, 120, 80)         # Per tornare al menu dal Filtro Ali
+BTN_STATISTICHE = (40, 400, 200, 460)
+BTN_AVANTI = (460, 400, 620, 460) # Per passare da CLASSIFICA a FILTRO_ALI
+BTN_MENU = (20, 20, 120, 80) # Per tornare al menu dal Filtro Ali
 
 WINGS_PATH = "./assets/wings.png"     # PNG trasparente delle ali da fata
 
