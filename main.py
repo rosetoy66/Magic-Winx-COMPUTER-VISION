@@ -7,11 +7,12 @@ import ui
 from face_detector import process_frame
 from winx_percentages_calculator import calculate_winx_match
 
-# --- GESTIONE RICONOSCIMENTO VOCALE (NLP/ASR) in Background ---
-magic_word_detected = False
+# riconoscimento vocale
+magic_word_detected = False 
+running = True # flag per fermare il thread alla chiusura
 
 def listen_for_magic_words():
-    global magic_word_detected
+    global magic_word_detected, running
     recognizer = sr.Recognizer()
     
     with sr.Microphone() as source:
@@ -19,17 +20,25 @@ def listen_for_magic_words():
         recognizer.adjust_for_ambient_noise(source, duration=1)
         print("[Microfono] In ascolto. Pronuncia la frase magica!")
         
-        while not magic_word_detected:
+        while running:
+            if magic_word_detected:
+                time.sleep(0.3)
+                continue
             try:
                 audio = recognizer.listen(source, timeout=1, phrase_time_limit=4)
                 text = recognizer.recognize_google(audio, language="it-IT").lower()
                 print(f"[Speech-to-Text] Riconosciuto: {text}")
                 
-                # Check flessibile delle keyword
-                if ("magic" in text or "winx" in text) and "vision" in text:
-                    print("*** PAROLA MAGICA RILEVATA! ***")
+                keywords_magic = ["magic", "magik", "magia"]
+                keywords_winx = ["winx", "wings", "vincs", "winks"]
+                keywords_vision = ["vision", "visione"]
+
+                found_magic_or_winx = any(k in text for k in keywords_magic + keywords_winx)
+                found_vision = any(k in text for k in keywords_vision)
+
+                if found_magic_or_winx or found_vision:
+                    print("PAROLA MAGICA RILEVATA!")
                     magic_word_detected = True
-                    break
                     
             except sr.WaitTimeoutError:
                 continue 
