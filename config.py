@@ -72,3 +72,12 @@ BTN_PROSEGUI = (460, 400, 620, 460)  # Per passare da CLASSIFICA a FILTRO_ALI
 BTN_MENU = (20, 20, 120, 80)         # Per tornare al menu dal Filtro Ali
 
 WINGS_PATH = "./Utilz/wings.png"     # PNG trasparente delle ali da fata
+
+WINX_WINGS_PATHS = {
+    "Bloom": "Utilz/bloom_ali.png",
+    "Stella": "Utilz/stella_ali.png",
+    "Flora": "Utilz/flora_ali.png",
+    "Musa": "Utilz/musa_ali.png",
+    "Tecna": "Utilz/tecna_ali.png",
+    "Aisha": "Utilz/aisha_ali.png"
+}
