@@ -2,8 +2,8 @@ import cv2
 import time
 import threading
 import speech_recognition as sr
-import config
-import ui
+import config as config
+import ui as ui
 from face_detector import process_frame
 from winx_percentages_calculator import calculate_winx_match
 

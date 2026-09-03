@@ -16,7 +16,7 @@ WEIGHTS = {
 
 MAX_POSSIBLE_DISTANCE = 365.0
 
-FONT_PATH = "./Utilz/winx_font.ttf"
+FONT_PATH = "./assets/winx_font.ttf"
 
 # coordinate bottoni 
 BTN_AVVIA = (70, 360, 270, 440)
@@ -33,8 +33,8 @@ SHADOW_RGB = (70, 30, 70)
 TEXT_PINK_RGB = (237, 0, 140)
 
 # effetti
-CURSOR_PATH = "./Utilz/cursor.png" # puntatore
-SPARKLE_PATH = "./Utilz/sparkle.png" # immagine della singola particella scia
+CURSOR_PATH = "./assets/cursor.png" # puntatore
+SPARKLE_PATH = "./assets/sparkle.png" # immagine della singola particella scia
 
 CURSOR_SIZE = (50, 50) # dimensione cursore
 SPARKLE_SIZE = (20, 20) # dimensione scintille
@@ -43,16 +43,16 @@ PARTICLE_DECAY_RATE = 0.08 # velocità con cui svaniscono le particelle
 
 # immagini winx
 WINX_IMAGES = {
-    "Bloom": "./Utilz/bloom.png",
-    "Stella": "./Utilz/stella.png",
-    "Flora": "./Utilz/flora.png",
-    "Aisha": "./Utilz/aisha.png",
-    "Musa": "./Utilz/musa.png",
-    "Tecna": "./Utilz/tecna.png"
+    "Bloom": "./assets/bloom.png",
+    "Stella": "./assets/stella.png",
+    "Flora": "./assets/flora.png",
+    "Aisha": "./assets/aisha.png",
+    "Musa": "./assets/musa.png",
+    "Tecna": "./assets/tecna.png"
 }
 
 # --- TRASFORMAZIONE 
-BG_VIDEO_PATH = "./Utilz/magic_bg.mp4"
+BG_VIDEO_PATH = "./assets/magic_bg.mp4"
 TINT_COLOR_BGR = (220, 130, 255)       #colore
 
 # --- CLASSIFICA E FILTRO ALI ---
@@ -71,13 +71,13 @@ BTN_AVANTI = (40, 400, 200, 460)     # Spostato in basso a SINISTRA
 BTN_PROSEGUI = (460, 400, 620, 460)  # Per passare da CLASSIFICA a FILTRO_ALI
 BTN_MENU = (20, 20, 120, 80)         # Per tornare al menu dal Filtro Ali
 
-WINGS_PATH = "./Utilz/wings.png"     # PNG trasparente delle ali da fata
+WINGS_PATH = "./assets/wings.png"     # PNG trasparente delle ali da fata
 
 WINX_WINGS_PATHS = {
-    "Bloom": "Utilz/bloom_ali.png",
-    "Stella": "Utilz/stella_ali.png",
-    "Flora": "Utilz/flora_ali.png",
-    "Musa": "Utilz/musa_ali.png",
-    "Tecna": "Utilz/tecna_ali.png",
-    "Aisha": "Utilz/aisha_ali.png"
+    "Bloom": "assets/bloom_ali.png",
+    "Stella": "assets/stella_ali.png",
+    "Flora": "assets/flora_ali.png",
+    "Musa": "assets/musa_ali.png",
+    "Tecna": "assets/tecna_ali.png",
+    "Aisha": "assets/aisha_ali.png"
 }

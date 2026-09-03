@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 from PIL import Image, ImageFont, ImageDraw
-import config
+import config as config
 import mediapipe as mp
 import math
 import random

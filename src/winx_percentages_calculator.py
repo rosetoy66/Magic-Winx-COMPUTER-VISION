@@ -1,6 +1,6 @@
 import math
 import colorsys
-import config
+import config as config
 
 def hex_to_rgb(hex_code):
     hex_code = hex_code.lstrip('#')
