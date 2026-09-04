@@ -90,14 +90,19 @@ def draw_intro_screen(frame, state_time, fade_progress):
     else:
         text = "Pronuncia le parole\n'Magic Winx Computer Vision!'\ne trasformati!"
 
-    bbox = draw.multiline_textbbox((0, 0), text, font=font, align="center")
+    
+    spazio_righe = 45  
+
+    
+    bbox = draw.multiline_textbbox((0, 0), text, font=font, align="center", spacing=spazio_righe)
     text_w = bbox[2] - bbox[0]
     text_h = bbox[3] - bbox[1]
     text_x = (w - text_w) // 2
     text_y = (h - text_h) // 2
 
-    draw.multiline_text((text_x + 3, text_y + 3), text, font=font, fill=(100, 0, 100), align="center")
-    draw.multiline_text((text_x, text_y), text, font=font, fill=(255, 255, 255), align="center")
+    
+    draw.multiline_text((text_x + 3, text_y + 3), text, font=font, fill=(100, 0, 100), align="center", spacing=spazio_righe)
+    draw.multiline_text((text_x, text_y), text, font=font, fill=(255, 255, 255), align="center", spacing=spazio_righe)
 
     overlay_bgr = cv2.cvtColor(np.array(pil_im), cv2.COLOR_RGB2BGR)
 
@@ -145,14 +150,16 @@ def draw_result_screen(frame, final_winx, final_perc):
     bgr_color = config.WINX_COLORS_BGR.get(final_winx, (0, 255, 255))
     rgb_color = (bgr_color[2], bgr_color[1], bgr_color[0])
 
-    # Testo "Sei..."
+# Testo "Sei..."
     title_text = f"Sei {final_winx}!"
     bbox_title = draw.textbbox((0, 0), title_text, font=font_title)
     title_w = bbox_title[2] - bbox_title[0]
     title_x = (frame_w - title_w) // 2
-    title_y = 200
+    
+    # --- MODIFICA QUI: Portiamo il titolo in cima ---
+    title_y = 40  # Prima era 200
 
-    draw.text((title_x + 2, title_y + 2), title_text, font=font_title, fill=(50, 0, 50)) # ombra
+    draw.text((title_x + 3, title_y + 3), title_text, font=font_title, fill=(50, 0, 50)) # ombra
     draw.text((title_x, title_y), title_text, font=font_title, fill=rgb_color) # testo winx
 
     # testo "affinita'..."
@@ -160,7 +167,9 @@ def draw_result_screen(frame, final_winx, final_perc):
     bbox_perc = draw.textbbox((0, 0), perc_text, font=font_sub)
     perc_w = bbox_perc[2] - bbox_perc[0]
     perc_x = (frame_w - perc_w) // 2
-    perc_y = 265
+    
+    # --- MODIFICA QUI: Portiamo il sottotitolo subito sotto ---
+    perc_y = 105  # Prima era 265
 
     draw.text((perc_x + 2, perc_y + 2), perc_text, font=font_sub, fill=(0, 0, 0)) # ombra
     draw.text((perc_x, perc_y), perc_text, font=font_sub, fill=(255, 255, 255)) # testo Bianco
@@ -268,6 +277,8 @@ def draw_avanti_button(frame):
 
     return cv2.cvtColor(np.array(pil_im), cv2.COLOR_RGB2BGR)
 
+
+# --- NUOVO BOTTONE MENU MODIFICATO ---
 def draw_menu_button(frame):
     if frame is None:
         return None
@@ -278,12 +289,14 @@ def draw_menu_button(frame):
     draw = ImageDraw.Draw(pil_im)
 
     try:
-        font_btn = ImageFont.truetype(config.FONT_PATH, 30)
+        # Font più piccolo perché la frase è lunga
+        font_btn = ImageFont.truetype(config.FONT_PATH, 22)
     except IOError:
         font_btn = ImageFont.load_default()
 
     shadow_offset = 3
     corner_radius = 30
+    
     # ombra nera dello sfondo e del bordo
     draw.rounded_rectangle(
         [x1 + shadow_offset, y1 + shadow_offset, x2 + shadow_offset, y2 + shadow_offset],
@@ -302,8 +315,8 @@ def draw_menu_button(frame):
         width=3
     )
 
-    # testo
-    text = "Menu'"
+    # Nuovo Testo
+    text = "Avvia nuova trasformazione"
     bbox = draw.textbbox((0, 0), text, font=font_btn)
     text_w = bbox[2] - bbox[0]
     text_h = bbox[3] - bbox[1]
@@ -317,8 +330,57 @@ def draw_menu_button(frame):
 
     return cv2.cvtColor(np.array(pil_im), cv2.COLOR_RGB2BGR)
 
+# --- NUOVO BOTTONE ESCI NEL FILTRO ALI ---
+def draw_esci_ali_button(frame):
+    if frame is None:
+        return None
 
+    x1, y1, x2, y2 = config.BTN_ESCI_ALI
 
+    pil_im = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+    draw = ImageDraw.Draw(pil_im)
+
+    try:
+        font_btn = ImageFont.truetype(config.FONT_PATH, 30)
+    except IOError:
+        font_btn = ImageFont.load_default()
+
+    shadow_offset = 3
+    corner_radius = 30
+
+    # Ombra
+    draw.rounded_rectangle(
+        [x1 + shadow_offset, y1 + shadow_offset, x2 + shadow_offset, y2 + shadow_offset],
+        radius=corner_radius,
+        fill=config.BTN_STATS_SHADOW_RGB,
+        outline=config.BTN_STATS_SHADOW_RGB,
+        width=3
+    )
+
+    # Colori per il tasto di uscita (convertiti da BGR a RGB per Pillow)
+    bg_esci_rgb = (config.BG_ESCI_BGR[2], config.BG_ESCI_BGR[1], config.BG_ESCI_BGR[0])
+    border_pink_rgb = (config.BORDER_PINK_BGR[2], config.BORDER_PINK_BGR[1], config.BORDER_PINK_BGR[0])
+
+    draw.rounded_rectangle(
+        [x1, y1, x2, y2],
+        radius=corner_radius,
+        fill=bg_esci_rgb,
+        outline=border_pink_rgb,
+        width=3
+    )
+
+    text = "Esci"
+    bbox = draw.textbbox((0, 0), text, font=font_btn)
+    text_w = bbox[2] - bbox[0]
+    text_h = bbox[3] - bbox[1]
+
+    text_x = x1 + ((x2 - x1) - text_w) // 2
+    text_y = y1 + ((y2 - y1) - text_h) // 2 - bbox[1]
+
+    draw.text((text_x + 2, text_y + 2), text, font=font_btn, fill=config.BTN_STATS_SHADOW_RGB)
+    draw.text((text_x, text_y), text, font=font_btn, fill=(255, 255, 255))
+
+    return cv2.cvtColor(np.array(pil_im), cv2.COLOR_RGB2BGR)
 
 def draw_particles(frame, particles):
     if frame is None: return None
@@ -373,7 +435,7 @@ def draw_winx_images(frame, winx_name):
         img_winx = cv2.imread(img_path, cv2.IMREAD_UNCHANGED)
         if img_winx is None: return frame
         h, w = img_winx.shape[:2]
-        new_w = 200
+        new_w = 300
         new_h = int((new_w / w) * h)
         img_winx = cv2.resize(img_winx, (new_w, new_h))
         if img_winx.shape[2] == 4:
@@ -399,21 +461,93 @@ def draw_winx_images(frame, winx_name):
 
 def draw_ranking_screen(frame, all_results):
     if frame is None: return None
+    frame_h, frame_w = frame.shape[:2]
+
+    # 1. SINISTRA: Overlay scuro compatto e Barre in OpenCV (Velocissimo!)
     overlay = frame.copy()
-    cv2.rectangle(overlay, (20, 50), (620, 390), (0, 0, 0), -1)
-    frame = cv2.addWeighted(overlay, 0.7, frame, 0.3, 0)
-    cv2.putText(frame, "CLASSIFICA AFFINITA'", (120, 90), cv2.FONT_HERSHEY_DUPLEX, 1.0, (255, 255, 255), 2)
-    y_offset = 115
+    cv2.rectangle(overlay, (5, 30), (230, 420), (0, 0, 0), -1)
+    frame = cv2.addWeighted(overlay, 0.6, frame, 0.4, 0)
+
+    y_offset = 45
     for winx_name, perc, details in all_results:
         color = config.WINX_COLORS_BGR.get(winx_name, (255, 100, 255))
-        cv2.putText(frame, f"{winx_name} {perc:.1f}%", (30, y_offset + 18), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
-        bar_width = int((perc / 100.0) * 300)
-        cv2.rectangle(frame, (210, y_offset), (210 + bar_width, y_offset + 20), color, -1)
-        cv2.rectangle(frame, (210, y_offset), (510, y_offset + 20), (255, 255, 255), 2)
-        details_text = f"Occhi: {details['eyes']:.0f}% | Capelli: {details['hair']:.0f}% | Pelle: {details['skin']:.0f}%"
-        cv2.putText(frame, details_text, (210, y_offset + 35), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (200, 255, 200), 1)
-        y_offset += 45
+        
+        # Disegniamo solo le barre grafiche in OpenCV
+        bar_width = int((perc / 100.0) * 200)
+        cv2.rectangle(frame, (15, y_offset + 22), (15 + bar_width, y_offset + 38), color, -1)
+        cv2.rectangle(frame, (15, y_offset + 22), (215, y_offset + 38), (255, 255, 255), 1) 
+        
+        y_offset += 62 # Spaziatura
 
+    # ==========================================
+    # 2. CONVERSIONE A PIL SINGOLA (Zero Lag!)
+    # ==========================================
+    pil_im = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+    draw = ImageDraw.Draw(pil_im)
+    
+    # Carichiamo le 3 dimensioni del font personalizzato
+    try:
+        font_title = ImageFont.truetype(config.FONT_PATH, 24)
+        font_main = ImageFont.truetype(config.FONT_PATH, 16)
+        font_small = ImageFont.truetype(config.FONT_PATH, 12)
+    except IOError:
+        font_title = font_main = font_small = ImageFont.load_default()
+
+    # Scriviamo il Titolo
+    draw.text((15, 10), "Classifica Affinità", font=font_title, fill=(255, 255, 255))
+
+    # Scriviamo tutti i testi delle Winx
+    y_offset = 45
+    for winx_name, perc, details in all_results:
+        # Nome e Percentuale (Sopra la barra)
+        draw.text((15, y_offset), f"{winx_name} {perc:.1f}%", font=font_main, fill=(255, 255, 255))
+        
+        # Dettagli statistiche (Sotto la barra)
+        details_text = f"Occhi: {details['eyes']:.0f}% | Capelli: {details['hair']:.0f}% | Pelle: {details['skin']:.0f}%"
+        draw.text((15, y_offset + 42), details_text, font=font_small, fill=(200, 255, 200))
+        
+        y_offset += 62
+
+    # Riconvertiamo a OpenCV (Una sola volta!)
+    frame = cv2.cvtColor(np.array(pil_im), cv2.COLOR_RGB2BGR)
+    # ==========================================
+
+    # 3. DESTRA: Immagine di gruppo Winx
+    if "winx_group" not in IMAGE_CACHE:
+        group_path = getattr(config, 'WINX_GROUP_PATH', "./assets/winx.png")
+        img_group = cv2.imread(group_path, cv2.IMREAD_UNCHANGED)
+        
+        if img_group is not None:
+            h, w = img_group.shape[:2]
+            new_w = 230  # Larghezza fissa a destra
+            new_h = int((new_w / w) * h)
+            img_group = cv2.resize(img_group, (new_w, new_h))
+            
+            if img_group.shape[2] == 4:
+                alpha_img = img_group[:, :, 3] / 255.0
+                alpha_frame = 1.0 - alpha_img
+                bgr_img = img_group[:, :, :3]
+                IMAGE_CACHE["winx_group"] = (bgr_img, alpha_img, alpha_frame, new_w, new_h, True)
+            else:
+                IMAGE_CACHE["winx_group"] = (img_group, None, None, new_w, new_h, False)
+        else:
+            IMAGE_CACHE["winx_group"] = (None, None, None, 0, 0, False)
+
+    bgr_img, alpha_img, alpha_frame, new_w, new_h, is_transparent = IMAGE_CACHE.get("winx_group", (None, None, None, 0, 0, False))
+    
+    if bgr_img is not None:
+        x_offset = frame_w - new_w - 10 
+        y_group = (frame_h - new_h) // 2 
+        
+        if is_transparent:
+            roi = frame[y_group:y_group+new_h, x_offset:x_offset+new_w]
+            for c in range(0, 3):
+                roi[:, :, c] = (alpha_img * bgr_img[:, :, c] + alpha_frame * roi[:, :, c])
+            frame[y_group:y_group+new_h, x_offset:x_offset+new_w] = roi
+        else:
+            frame[y_group:y_group+new_h, x_offset:x_offset+new_w] = bgr_img
+
+    # 4. Disegna il bottone AVANTI
     frame = draw_avanti_button(frame)
 
     return frame
@@ -428,9 +562,12 @@ def apply_wings_effect(frame, winx_name):
         img = cv2.imread(wings_path, cv2.IMREAD_UNCHANGED)
         WINGS_CACHE[winx_name] = img
 
+#non disegnava  i bottoni se non prendeva ali
     wings_img = WINGS_CACHE[winx_name]
     if wings_img is None: 
-        return frame
+        safe_frame = draw_menu_button(frame)
+        safe_frame = draw_esci_ali_button(safe_frame)
+        return safe_frame
 
     h, w, _ = frame.shape
     frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -461,4 +598,49 @@ def apply_wings_effect(frame, winx_name):
     
     final_frame = np.where(condition, frame, frame_with_wings)
     
-    return draw_menu_button(final_frame)
+    # --- DISEGNO ENTRAMBI I BOTTONI FINALI ---
+    final_frame = draw_menu_button(final_frame)
+    final_frame = draw_esci_ali_button(final_frame)
+    
+    return final_frame
+
+def draw_analisi_screen(frame, missing_face=False):
+    if frame is None: return None
+    frame_h, frame_w = frame.shape[:2]
+
+    # Convertiamo a PIL
+    pil_im = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+    draw = ImageDraw.Draw(pil_im)
+    
+    try:
+        font_main = ImageFont.truetype(config.FONT_PATH, 45)
+        font_err = ImageFont.truetype(config.FONT_PATH, 30)
+    except IOError:
+        font_main = ImageFont.load_default()
+        font_err = ImageFont.load_default()
+
+    # --- SCRITTA PRINCIPALE CENTRATA ---
+    text = "Sprigiona il tuo potere!"
+    bbox = draw.textbbox((0, 0), text, font=font_main)
+    text_w = bbox[2] - bbox[0]
+    
+    text_x = (frame_w - text_w) // 2 # Calcolo matematico per centrare
+    text_y = 40 # Altezza dal bordo superiore
+
+    # Ombra scura e Testo rosa magico
+    draw.text((text_x + 3, text_y + 3), text, font=font_main, fill=(70, 0, 70))
+    draw.text((text_x, text_y), text, font=font_main, fill=(255, 180, 255))
+
+    # --- SCRITTA DI AVVISO (Solo se non trova il volto) ---
+    if missing_face:
+        err_text = "Inquadra bene il volto!"
+        bbox_err = draw.textbbox((0, 0), err_text, font=font_err)
+        err_w = bbox_err[2] - bbox_err[0]
+        
+        err_x = (frame_w - err_w) // 2
+        err_y = text_y + 60 # Più in basso
+        
+        draw.text((err_x + 2, err_y + 2), err_text, font=font_err, fill=(50, 0, 0))
+        draw.text((err_x, err_y), err_text, font=font_err, fill=(255, 50, 50))
+
+    return cv2.cvtColor(np.array(pil_im), cv2.COLOR_RGB2BGR)

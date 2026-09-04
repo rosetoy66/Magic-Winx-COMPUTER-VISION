@@ -74,7 +74,8 @@ WINX_COLORS_BGR = {
 # Coordinate dei nuovi bottoni
 BTN_STATISTICHE = (40, 400, 200, 460)
 BTN_AVANTI = (460, 400, 620, 460) # Per passare da CLASSIFICA a FILTRO_ALI
-BTN_MENU = (20, 20, 120, 80) # Per tornare al menu dal Filtro Ali
+BTN_MENU = (20, 20, 380, 80) #per menu da filtro ali
+BTN_ESCI_ALI = (480, 20, 620, 80)
 
 WINGS_PATH = "./assets/wings.png"     # PNG trasparente delle ali da fata
 
@@ -86,3 +87,22 @@ WINX_WINGS_PATHS = {
     "Tecna": "assets/tecna_ali.png",
     "Aisha": "assets/aisha_ali.png"
 }
+
+WINX_GROUP_PATH = "./assets/winx.png"
+
+# Mappatura dei video di trasformazione in base alla Winx assegnata
+WINX_VIDEOS_PATHS = {
+    "Bloom": "./assets/bloom_video.mp4",
+    "Stella": "./assets/stella_video.mp4",
+    "Flora": "./assets/flora_video.mp4",
+    "Musa": "./assets/musa_video.mp4",
+    "Tecna": "./assets/tecna_video.mp4",
+    "Aisha": "./assets/aisha_video.mp4"
+}
+
+# --- AUDIO ---
+SOUND1_PATH = "./assets/suono1.mp3" # Suono "positivo" (Avvia, Avanti, ecc.)
+SOUND2_PATH = "./assets/suono2.mp3" # Suono di uscita/reset
+BGM_PATH = "./assets/musica_trasformazione.mp3"
+
+
