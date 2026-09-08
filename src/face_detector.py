@@ -16,18 +16,17 @@ color_buffers = {
     "hair": []
 }
 
+hair_box_buffer = []
+
 def get_stable_color(feature_name, raw_color):
-    # calcola la media degli ultimi colori letti per stabilizzare il risultato usando una lista
     if raw_color == (0, 0, 0):
         return raw_color
     
-    color_buffers[feature_name].append(raw_color) # aggiunge il nuovo colore alla lista
+    color_buffers[feature_name].append(raw_color)
     
-    # se len > 15, cancella il primo
     if len(color_buffers[feature_name]) > BUFFER_SIZE:
         color_buffers[feature_name].pop(0)
     
-    # calcola la media
     avg_r = int(np.mean([c[0] for c in color_buffers[feature_name]]))
     avg_g = int(np.mean([c[1] for c in color_buffers[feature_name]]))
     avg_b = int(np.mean([c[2] for c in color_buffers[feature_name]]))
@@ -65,17 +64,39 @@ def process_frame(frame):
 
         # guancia per la pelle
         cx, cy = get_pt(50)
-        skin_y1, skin_y2 = max(0, cy-15), min(h, cy+15)
-        skin_x1, skin_x2 = max(0, cx-15), min(w, cx+15)
+        skin_y1, skin_y2 = max(0, cy - 15), min(h, cy + 15)
+        skin_x1, skin_x2 = max(0, cx - 15), min(w, cx + 15)
         skin_crop = frame[skin_y1:skin_y2, skin_x1:skin_x2]
-        skin_color = get_dominant_color(skin_crop) if skin_crop.size > 0 else (0,0,0)
+        skin_color = get_dominant_color(skin_crop) if skin_crop.size > 0 else (0, 0, 0)
 
         # capelli
-        fx, fy = get_pt(10)
-        hair_y1, hair_y2 = max(0, fy - 75), max(0, fy - 45) # rettangolo sopra la fronte per i capelli
-        hair_x1, hair_x2 = max(0, fx - 20), min(w, fx + 20)
+        fx, fy = get_pt(10)       # Fronte alta
+        _, chin_y = get_pt(152)   # Mento
+        
+        face_height = abs(chin_y - fy)
+        
+        # Gap portato a 0.17 per alzare ulteriormente il rettangolo sui capelli
+        gap = int(face_height * 0.17)     
+        box_h = int(face_height * 0.09)   
+        box_w = int(face_height * 0.25)   
+
+        raw_y2 = max(0, fy - gap)
+        raw_y1 = max(0, raw_y2 - box_h)
+        raw_x1 = max(0, fx - (box_w // 2))
+        raw_x2 = min(w, fx + (box_w // 2))
+
+        # Smoothing delle coordinate
+        hair_box_buffer.append((raw_x1, raw_y1, raw_x2, raw_y2))
+        if len(hair_box_buffer) > 10:
+            hair_box_buffer.pop(0)
+
+        hair_x1 = int(np.mean([b[0] for b in hair_box_buffer]))
+        hair_y1 = int(np.mean([b[1] for b in hair_box_buffer]))
+        hair_x2 = int(np.mean([b[2] for b in hair_box_buffer]))
+        hair_y2 = int(np.mean([b[3] for b in hair_box_buffer]))
+
         hair_crop = frame[hair_y1:hair_y2, hair_x1:hair_x2]
-        hair_color = get_dominant_color(hair_crop) if hair_crop.size > 0 else (0,0,0)
+        hair_color = get_dominant_color(hair_crop) if hair_crop.size > 0 else (0, 0, 0)
 
         cv2.polylines(frame, [eye_pts], isClosed=True, color=(0, 255, 0), thickness=1) # verde: occhio
         cv2.rectangle(frame, (skin_x1, skin_y1), (skin_x2, skin_y2), (0, 0, 255), 1)   # rosso: pelle
@@ -87,4 +108,4 @@ def process_frame(frame):
             "skin": get_stable_color("skin", skin_color)
         }
         
-    return finger_pos, colors
+    return frame, finger_pos, colors

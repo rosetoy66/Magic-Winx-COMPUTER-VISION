@@ -1,7 +1,7 @@
 import cv2
 import time
 import pygame
-import numpy as np # Aggiunto per il flash bianco
+import numpy as np
 import config
 import ui
 from face_detector import process_frame
@@ -45,7 +45,7 @@ def main():
     fade_start_time = None
     transformation_start_time = 0 
     analysis_start_time = 0 
-    flash_start_time = None # Variabile per il timer del flash
+    flash_start_time = None
 
     while True:
         ret, frame = cap.read()
@@ -56,11 +56,10 @@ def main():
         colors = None
         
         if state != "INTRO":
-            # TRUCCO MAGICO 1: Passiamo frame.copy()! 
-            # Il face_detector disegna i landmark sulla copia, lasciando il nostro 'frame' pulito!
-            finger_pos, colors = process_frame(frame.copy())
+            # disegna i landmark sulla copia, lasciando il nostro frame pulito
+            frame, finger_pos, colors = process_frame(frame.copy())
 
-        # GESTIONE GRAFICA DEGLI STATI
+        # gestione stati
         if state == "INTRO":
             current_time = time.time()
             elapsed_state_time = current_time - intro_start_time
@@ -96,10 +95,10 @@ def main():
                     try: pygame.mixer.music.play(-1)
                     except: pass
                 else:
-                    # Se non trova il volto, flaggiamo l'errore
+                    # se non trova il volto, da errore
                     missing_face = True
             
-            # Disegna le scritte tramite la nostra nuova funzione in ui.py!
+            # disegna le scritte tramite la nostra nuova funzione in ui.py!
             frame = ui.draw_analisi_screen(frame, missing_face)
             
             if time.time() - analysis_start_time > 4.0:
@@ -134,7 +133,7 @@ def main():
             
             if elapsed_transform >= 5.0:
                 state = "CALCOLO"
-                # TRUCCO MAGICO 2: Facciamo partire il timer del flash appena finisce la trasformazione
+                # timer flash appena finisce la trasformazione
                 flash_start_time = time.time() 
                 
         elif state == "CALCOLO":
@@ -142,7 +141,7 @@ def main():
             frame = ui.draw_winx_images(frame, final_winx)
             frame = ui.draw_stats_button(frame)
             
-            # --- EFFETTO FLASH BIANCO (Dura 0.6 secondi) ---
+            # flash bianco
             if flash_start_time is not None:
                 elapsed_flash = time.time() - flash_start_time
                 flash_duration = 0.6 
@@ -161,7 +160,7 @@ def main():
             frame = ui.apply_wings_effect(frame, final_winx)
 
 
-        # GESTIONE DEL DITO E DELLE COLLISIONI
+        # gestione dito e collisione
         if state not in ["INTRO", "ANALISI"] and finger_pos:
             fx, fy = finger_pos
             particles.append([fx, fy, 1.0])
@@ -236,9 +235,7 @@ def main():
         if frame is not None:
             cv2.imshow("Magic Winx: COMPUTER VISION!!", frame)
         
-        # ==========================================
-        # GESTIONE TASTIERA E DEBUG MODE (Dentro il ciclo while)
-        # ==========================================
+        # debug mode
         key = cv2.waitKey(1) & 0xFF
         if key == ord('q'):
             voice_rec.stop()
@@ -246,7 +243,7 @@ def main():
         elif key == ord('t'):
             voice_rec.trigger_manual()
             
-        # DEBUG (Tasti da 1 a 6)
+        # tasti da 1 a 6
         elif state == "INTRO" and key in [ord('1'), ord('2'), ord('3'), ord('4'), ord('5'), ord('6')]:
             debug_map = {
                 ord('1'): "Bloom", ord('2'): "Stella", ord('3'): "Flora",
@@ -281,7 +278,7 @@ def main():
             except: 
                 pass
 
-#chiusura e pulizia
+# chiusura e pulizia
     cap.release()
     if bg_cap is not None: 
         bg_cap.release()
