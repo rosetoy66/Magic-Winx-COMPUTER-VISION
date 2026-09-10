@@ -140,6 +140,7 @@ def main():
             frame = ui.draw_result_screen(frame, final_winx, final_perc)
             frame = ui.draw_winx_images(frame, final_winx)
             frame = ui.draw_stats_button(frame)
+            # frame = ui.draw_detected_colors(frame, colors) # stampa i colori rilevati (per debuggare)
             
             # flash bianco
             if flash_start_time is not None:

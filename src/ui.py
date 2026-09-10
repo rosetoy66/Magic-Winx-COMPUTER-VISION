@@ -648,3 +648,42 @@ def draw_analisi_screen(frame, missing_face=False):
         draw.text((err_x, err_y), err_text, font=font_err, fill=(255, 50, 50))
 
     return cv2.cvtColor(np.array(pil_im), cv2.COLOR_RGB2BGR)
+
+def draw_detected_colors(frame, colors): # diegna i colori rilevati in alto a destra (serve per debuggare)
+    if frame is None or not colors:
+        return frame
+
+    h, w = frame.shape[:2]
+    box_size = 22
+    spacing = 10
+    margin_right = 15
+    margin_top = 15
+
+    features = [
+        ("Occhi", "eyes"),
+        ("Capelli", "hair"),
+        ("Pelle", "skin")
+    ]
+
+    for i, (label, key) in enumerate(features):
+        rgb_color = colors.get(key)
+        if rgb_color is None or rgb_color == (0, 0, 0):
+            continue
+
+        # Conversione da RGB a BGR per OpenCV
+        bgr_color = (int(rgb_color[2]), int(rgb_color[1]), int(rgb_color[0]))
+
+        x2 = w - margin_right
+        x1 = x2 - box_size
+        y1 = margin_top + i * (box_size + spacing)
+        y2 = y1 + box_size
+
+        # Etichetta di testo con ombra nera per visibilità
+        cv2.putText(frame, label, (x1 - 65 + 1, y1 + 16 + 1), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 0, 0), 2, cv2.LINE_AA)
+        cv2.putText(frame, label, (x1 - 65, y1 + 16), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (255, 255, 255), 1, cv2.LINE_AA)
+
+        # Quadratino con il colore rilevato e bordo bianco
+        cv2.rectangle(frame, (x1, y1), (x2, y2), bgr_color, -1)
+        cv2.rectangle(frame, (x1, y1), (x2, y2), (255, 255, 255), 1)
+
+    return frame
