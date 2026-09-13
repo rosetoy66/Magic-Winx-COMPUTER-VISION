@@ -20,7 +20,7 @@ An interactive real-time computer vision application built in Python that analyz
 
 | Category | Technologies |
 | :--- | :--- |
-| **Language** | Python 3.9+ |
+| **Language** | Python 3.10 or 3.11 |
 | **Computer Vision & AR** | OpenCV, MediaPipe (Face Mesh, Hands, Pose, Selfie Segmentation) |
 | **Speech & Audio** | Vosk (Offline Speech-to-Text), PyAudio, Pygame (Mixer) |
 | **Graphics & Processing** | Pillow (PIL), NumPy, Colorsys |
