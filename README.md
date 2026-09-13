@@ -2,7 +2,7 @@
 
 An interactive real-time computer vision application built in Python that analyzes facial features (eye color, hair color, and skin tone), matches them against Winx character color profiles, and applies video transformation effects and AR fairy wings using touchless hand tracking and offline voice recognition.
 
----
+
 
 ## Key Features
 
@@ -13,7 +13,8 @@ An interactive real-time computer vision application built in Python that analyz
 * **Dynamic Video Transformation**: Blends webcam feeds with custom background transformation videos, custom font overlays, and multi-channel audio effects using OpenCV and Pygame
 * **Performance Caching**: Employs RAM caching for UI overlays and downscaled segmentation passes to maintain a high framerate
 
----
+
+
 
 ## Tech Stack
 
@@ -24,7 +25,9 @@ An interactive real-time computer vision application built in Python that analyz
 | **Speech & Audio** | Vosk (Offline Speech-to-Text), PyAudio, Pygame (Mixer) |
 | **Graphics & Processing** | Pillow (PIL), NumPy, Colorsys |
 
----
+
+
+
 
 ## Getting Started
 
@@ -49,7 +52,9 @@ pip install opencv-python mediapipe==0.10.14 pygame numpy vosk pyaudio pillow
 python main.py
 ```
 
----
+
+
+
 
 ## Control and Interaction
 
