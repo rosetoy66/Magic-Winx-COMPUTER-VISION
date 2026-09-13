@@ -6,13 +6,21 @@ import mediapipe as mp
 import math
 import random
 
-# inizializza il segmentatore di MediaPipe
-mp_selfie_segmentation = mp.solutions.selfie_segmentation
-segmenter = mp_selfie_segmentation.SelfieSegmentation(model_selection=0)
+# variabili vuote per i modelli
+mp_pose = None
+segmenter = None
+pose_detector = None
 
-# inizializza il Pose Detector per trovare le spalle
-mp_pose = mp.solutions.pose
-pose_detector = mp_pose.Pose(model_complexity=0, min_detection_confidence=0.5, min_tracking_confidence=0.5)
+def init_models():
+    """Carica MediaPipe solo quando viene chiamato"""
+    global mp_pose, segmenter, pose_detector
+    import mediapipe as mp
+    
+    mp_selfie_segmentation = mp.solutions.selfie_segmentation
+    segmenter = mp_selfie_segmentation.SelfieSegmentation(model_selection=0)
+
+    mp_pose = mp.solutions.pose
+    pose_detector = mp_pose.Pose(model_complexity=0, min_detection_confidence=0.5, min_tracking_confidence=0.5)
 
 # immagini cursore e scintille
 cursor_img = cv2.imread(config.CURSOR_PATH, cv2.IMREAD_UNCHANGED)
@@ -667,7 +675,7 @@ def draw_detected_colors(frame, colors): # diegna i colori rilevati in alto a de
         if rgb_color is None or rgb_color == (0, 0, 0):
             continue
 
-        # Conversione da RGB a BGR per OpenCV
+        # conversione da RGB a BGR per OpenCV
         bgr_color = (int(rgb_color[2]), int(rgb_color[1]), int(rgb_color[0]))
 
         x2 = w - margin_right
@@ -675,11 +683,11 @@ def draw_detected_colors(frame, colors): # diegna i colori rilevati in alto a de
         y1 = margin_top + i * (box_size + spacing)
         y2 = y1 + box_size
 
-        # Etichetta di testo con ombra nera per visibilità
+        # etichetta di testo con ombra nera per visibilità
         cv2.putText(frame, label, (x1 - 65 + 1, y1 + 16 + 1), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 0, 0), 2, cv2.LINE_AA)
         cv2.putText(frame, label, (x1 - 65, y1 + 16), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (255, 255, 255), 1, cv2.LINE_AA)
 
-        # Quadratino con il colore rilevato e bordo bianco
+        # quadratino con il colore rilevato e bordo bianco
         cv2.rectangle(frame, (x1, y1), (x2, y2), bgr_color, -1)
         cv2.rectangle(frame, (x1, y1), (x2, y2), (255, 255, 255), 1)
 

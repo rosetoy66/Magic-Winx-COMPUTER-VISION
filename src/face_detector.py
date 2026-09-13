@@ -3,11 +3,24 @@ import numpy as np
 import mediapipe as mp
 from color_analyzer import get_dominant_color
 
-mp_face_mesh = mp.solutions.face_mesh
-face_mesh = mp_face_mesh.FaceMesh(max_num_faces=1, refine_landmarks=True)
+import cv2
+import numpy as np
+from color_analyzer import get_dominant_color
 
-mp_hands = mp.solutions.hands
-hands = mp_hands.Hands(max_num_hands=1, min_detection_confidence=0.7)
+# inizializza le variabili vuote
+face_mesh = None
+hands = None
+
+def init_models():
+    """Carica MediaPipe solo quando viene chiamato"""
+    global face_mesh, hands
+    import mediapipe as mp
+    
+    mp_face_mesh = mp.solutions.face_mesh
+    face_mesh = mp_face_mesh.FaceMesh(max_num_faces=1, refine_landmarks=True)
+
+    mp_hands = mp.solutions.hands
+    hands = mp_hands.Hands(max_num_hands=1, min_detection_confidence=0.7)
 
 BUFFER_SIZE = 15
 color_buffers = {

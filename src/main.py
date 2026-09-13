@@ -4,7 +4,7 @@ import pygame
 import numpy as np
 import config
 import ui
-from face_detector import process_frame
+import face_detector
 from winx_percentages_calculator import calculate_winx_match
 from voice_recognizer import VoiceRecognizer
 
@@ -28,12 +28,30 @@ def is_inside_button(pos, btn_coords):
     return bx1 < x < bx2 and by1 < y < by2
 
 def main():
+    # apre la fotocamera
+    cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+    
+    # mostra la tua schermata "Hai mai sognato di essere una fata?"
+    ret, frame = cap.read()
+    if ret:
+        frame = cv2.flip(frame, 1)
+        # disegna l'intro con tempo 0 per avere l'immagine fissa di base
+        intro_frame = ui.draw_intro_screen(frame.copy(), 0.0, 0.0)
+        cv2.imshow("Magic Winx: COMPUTER VISION!!", intro_frame)
+        cv2.waitKey(1) # Forza l'aggiornamento della finestra!
+
+    print("Caricamento modelli magici in corso...")
+    
+    # carica i modelli pesanti. Lo schermo resterà con la tua grafica finché non finisce
+    ui.init_models()
+    face_detector.init_models()
+    
+    print("Modelli caricati! Avvio in corso...")
+    
     voice_rec = VoiceRecognizer()
     voice_rec.start()
     
-    cap = cv2.VideoCapture(0)
     bg_cap = None
-    
     state = "INTRO"
     
     final_winx = ""
@@ -41,6 +59,7 @@ def main():
     all_results = []
     particles = [] 
     
+    # iniziamo a contare il tempo DA ADESSO, così l'animazione delle scintille parte ora
     intro_start_time = time.time()
     fade_start_time = None
     transformation_start_time = 0 
@@ -56,15 +75,15 @@ def main():
         colors = None
         
         if state != "INTRO":
-            # disegna i landmark sulla copia, lasciando il nostro frame pulito
-            frame, finger_pos, colors = process_frame(frame.copy())
+            frame, finger_pos, colors = face_detector.process_frame(frame.copy())
 
-        # gestione stati
+        # GESTIONE STATI
         if state == "INTRO":
             current_time = time.time()
             elapsed_state_time = current_time - intro_start_time
             fade_progress = 0.0
             
+            # Controllo voce e attivazione DISSOLVENZA
             if voice_rec.magic_word_detected and fade_start_time is None:
                 fade_start_time = current_time
                 
@@ -75,6 +94,7 @@ def main():
                     analysis_start_time = time.time()
                     particles.clear()
             
+            # Qui applichiamo la tua funzione che gestisce la dissolvenza (fade_progress)
             frame = ui.draw_intro_screen(frame, elapsed_state_time, fade_progress)
             
         elif state == "ANALISI":
@@ -95,10 +115,8 @@ def main():
                     try: pygame.mixer.music.play(-1)
                     except: pass
                 else:
-                    # se non trova il volto, da errore
                     missing_face = True
             
-            # disegna le scritte tramite la nostra nuova funzione in ui.py!
             frame = ui.draw_analisi_screen(frame, missing_face)
             
             if time.time() - analysis_start_time > 4.0:
@@ -133,26 +151,22 @@ def main():
             
             if elapsed_transform >= 5.0:
                 state = "CALCOLO"
-                # timer flash appena finisce la trasformazione
                 flash_start_time = time.time() 
                 
         elif state == "CALCOLO":
             frame = ui.draw_result_screen(frame, final_winx, final_perc)
             frame = ui.draw_winx_images(frame, final_winx)
             frame = ui.draw_stats_button(frame)
-            # frame = ui.draw_detected_colors(frame, colors) # stampa i colori rilevati (per debuggare)
             
-            # flash bianco
             if flash_start_time is not None:
                 elapsed_flash = time.time() - flash_start_time
                 flash_duration = 0.6 
                 if elapsed_flash < flash_duration:
-                    # Parte dall'85% di bianco e scende dolcemente a 0
                     flash_intensity = 0.85 * (1.0 - (elapsed_flash / flash_duration))
                     white_overlay = np.full(frame.shape, 255, dtype=np.uint8)
                     frame = cv2.addWeighted(white_overlay, flash_intensity, frame, 1.0 - flash_intensity, 0)
                 else:
-                    flash_start_time = None # Fine del flash
+                    flash_start_time = None 
             
         elif state == "CLASSIFICA":
             frame = ui.draw_ranking_screen(frame, all_results)
@@ -160,38 +174,14 @@ def main():
         elif state == "FILTRO_ALI":
             frame = ui.apply_wings_effect(frame, final_winx)
 
-
-        # gestione dito e collisione
+        # Gestione dito e collisione
         if state not in ["INTRO", "ANALISI"] and finger_pos:
             fx, fy = finger_pos
             particles.append([fx, fy, 1.0])
             frame = ui.draw_particles(frame, particles)
             frame = ui.draw_cursor(frame, fx, fy)
             
-            if state == "MENU":
-                if is_inside_button(finger_pos, config.BTN_AVVIA):
-                    play_sfx(snd1)
-                    if colors:
-                        final_winx, final_perc, all_results = calculate_winx_match(colors['eyes'], colors['hair'], colors['skin'])
-                        
-                        video_path = getattr(config, 'WINX_VIDEOS_PATHS', {}).get(final_winx, getattr(config, 'BG_VIDEO_PATH', None))
-                        if bg_cap is not None: bg_cap.release()
-                        if video_path: bg_cap = cv2.VideoCapture(video_path)
-                        
-                        state = "TRASFORMAZIONE"
-                        transformation_start_time = time.time() 
-                        particles.clear() 
-                        
-                        try: pygame.mixer.music.play(-1)
-                        except: pass
-                        
-                        time.sleep(0.5) 
-                        
-                elif is_inside_button(finger_pos, config.BTN_ESCI):
-                    play_sfx(snd2)
-                    break
-                    
-            elif state == "CALCOLO":
+            if state == "CALCOLO":
                 if is_inside_button(finger_pos, config.BTN_STATISTICHE):
                     play_sfx(snd1)
                     state = "CLASSIFICA"
@@ -236,7 +226,7 @@ def main():
         if frame is not None:
             cv2.imshow("Magic Winx: COMPUTER VISION!!", frame)
         
-        # debug mode
+        # Tasti e Debug
         key = cv2.waitKey(1) & 0xFF
         if key == ord('q'):
             voice_rec.stop()
@@ -244,13 +234,11 @@ def main():
         elif key == ord('t'):
             voice_rec.trigger_manual()
             
-        # tasti da 1 a 6
         elif state == "INTRO" and key in [ord('1'), ord('2'), ord('3'), ord('4'), ord('5'), ord('6')]:
             debug_map = {
                 ord('1'): "Bloom", ord('2'): "Stella", ord('3'): "Flora",
                 ord('4'): "Tecna", ord('5'): "Musa", ord('6'): "Aisha"
             }
-            
             final_winx = debug_map[key]
             final_perc = 100.0
             
@@ -260,26 +248,20 @@ def main():
                     all_results.append((w, 100.0, {'eyes': 100, 'hair': 100, 'skin': 100}))
                 else:
                     all_results.append((w, 0.0, {'eyes': 0, 'hair': 0, 'skin': 0}))
-                    
             all_results.sort(key=lambda x: x[1], reverse=True)
             
             video_path = getattr(config, 'WINX_VIDEOS_PATHS', {}).get(final_winx, getattr(config, 'BG_VIDEO_PATH', None))
-            if bg_cap is not None: 
-                bg_cap.release()
-            if video_path: 
-                bg_cap = cv2.VideoCapture(video_path)
+            if bg_cap is not None: bg_cap.release()
+            if video_path: bg_cap = cv2.VideoCapture(video_path)
             
             state = "TRASFORMAZIONE"
             transformation_start_time = time.time()
             particles.clear()
             voice_rec.reset() 
             
-            try: 
-                pygame.mixer.music.play(-1)
-            except: 
-                pass
+            try: pygame.mixer.music.play(-1)
+            except: pass
 
-# chiusura e pulizia
     cap.release()
     if bg_cap is not None: 
         bg_cap.release()
