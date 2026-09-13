@@ -1,4 +1,4 @@
-#🧚‍♀️ Magic Winx: Computer Vision
+# 🧚‍♀️ Magic Winx: Computer Vision
 
 An interactive real-time computer vision application built in Python that analyzes facial features (eye color, hair color, and skin tone), matches them against Winx character color profiles, and applies video transformation effects and AR fairy wings using touchless hand tracking and offline voice recognition.
 
@@ -53,11 +53,12 @@ python main.py
 
 ## Control and Interaction
 
-| Control Input | Action |
-| Voice Command | Speak words like "Magic", "Winx", or "Vision" into the microphone |
-| Index Finger Hover | Touchless interaction with UI buttons and particle generation |
-| `T` Key | Manually trigger voice activation override |
-| `Q` Key | Exit the application |
+| **Control Input** | **Action** |
+| :--- | :--- |
+| **Voice Command** | Speak words like "Magic", "Winx", or "Vision" into the microphone |
+| **Index Finger Hover** | Touchless interaction with UI buttons and particle generation |
+| `T` **Key** | Manually trigger voice activation override |
+| `Q` **Key** | Exit the application |
 
 
 
