@@ -105,4 +105,4 @@ SOUND1_PATH = "./assets/suono1.mp3" # Suono "positivo" (Avvia, Avanti, ecc.)
 SOUND2_PATH = "./assets/suono2.mp3" # Suono di uscita/reset
 BGM_PATH = "./assets/musica_trasformazione.mp3"
 
-
+model_path = "./assets/model_it"  # percorso del modello Vosk in italiano

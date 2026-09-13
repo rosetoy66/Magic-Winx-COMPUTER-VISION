@@ -1,12 +1,20 @@
 import time
 import threading
-import speech_recognition as sr
+import json
+import pyaudio
+from config import model_path
+from vosk import Model, KaldiRecognizer
 
 class VoiceRecognizer:
-    def __init__(self):
+    def __init__(self, model_path = model_path):
         self.magic_word_detected = False
         self.running = True
         self.thread = None
+        
+        # carica il modello Vosk interamente in locale
+        print("[Sistema] Caricamento modello locale in corso...")
+        self.model = Model(model_path)
+        print("[Sistema] Modello caricato con successo.")
 
     def start(self):
         # avvia il thread di ascolto in background
@@ -27,24 +35,38 @@ class VoiceRecognizer:
         self.magic_word_detected = True
 
     def _listen_loop(self):
-        recognizer = sr.Recognizer()
+        # inizializza il riconoscitore a 16000 hz
+        recognizer = KaldiRecognizer(self.model, 16000)
+        p = pyaudio.PyAudio()
         
-        with sr.Microphone() as source:
-            print("[Microfono] Calibrazione rumore di fondo in corso...")
-            recognizer.adjust_for_ambient_noise(source, duration=1)
-            print("[Microfono] In ascolto. Pronuncia la frase magica!")
-            
-            while self.running:
-                if self.magic_word_detected:
-                    time.sleep(0.3)
-                    continue
+        # apre lo stream del microfono
+        stream = p.open(format=pyaudio.paInt16, 
+                        channels=1, 
+                        rate=16000, 
+                        input=True, 
+                        frames_per_buffer=8192)
+        stream.start_stream()
+        
+        print("[Microfono] In ascolto. Pronuncia la frase magica!")
+        
+        while self.running:
+            if self.magic_word_detected:
+                time.sleep(0.3)
+                continue
 
-                try:
-                    audio = recognizer.listen(source, timeout=1, phrase_time_limit=4)
-                    text = recognizer.recognize_google(audio, language="it-IT").lower()
+            # legge i dati grezzi dal microfono
+            data = stream.read(4096, exception_on_overflow=False)
+            
+            # restituisce true quando rileva una pausa nel parlato
+            if recognizer.AcceptWaveform(data):
+                # estrae il testo dal json restituito da vosk
+                result = json.loads(recognizer.Result())
+                text = result.get("text", "").lower()
+                
+                if text:
                     print(f"[Speech-to-Text] Riconosciuto: {text}")
                     
-                    keywords_magic = ["magic", "magik", "magia"]
+                    keywords_magic = ["magic", "magik", "magia", "megic"]
                     keywords_winx = ["winx", "wings", "vincs", "winks"]
                     keywords_vision = ["vision", "visione"]
 
@@ -54,11 +76,3 @@ class VoiceRecognizer:
                     if found_magic_or_winx or found_vision:
                         print("PAROLA MAGICA RILEVATA!")
                         self.magic_word_detected = True
-                        
-                except sr.WaitTimeoutError:
-                    continue 
-                except sr.UnknownValueError:
-                    pass 
-                except sr.RequestError as e:
-                    print(f"[Errore SR] Rete assente o API irraggiungibile: {e}")
-                    pass

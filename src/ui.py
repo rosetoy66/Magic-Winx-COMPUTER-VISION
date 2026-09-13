@@ -1,5 +1,4 @@
 import cv2
-from matplotlib.pyplot import draw
 import numpy as np
 from PIL import Image, ImageFont, ImageDraw
 import config as config
@@ -15,7 +14,7 @@ segmenter = mp_selfie_segmentation.SelfieSegmentation(model_selection=0)
 mp_pose = mp.solutions.pose
 pose_detector = mp_pose.Pose(model_complexity=0, min_detection_confidence=0.5, min_tracking_confidence=0.5)
 
-# Pre-caricamento immagini cursore e scintille
+# immagini cursore e scintille
 cursor_img = cv2.imread(config.CURSOR_PATH, cv2.IMREAD_UNCHANGED)
 sparkle_img = cv2.imread(config.SPARKLE_PATH, cv2.IMREAD_UNCHANGED)
 
@@ -149,14 +148,13 @@ def draw_result_screen(frame, final_winx, final_perc):
     bgr_color = config.WINX_COLORS_BGR.get(final_winx, (0, 255, 255))
     rgb_color = (bgr_color[2], bgr_color[1], bgr_color[0])
 
-# Testo "Sei..."
+# testo "Sei..."
     title_text = f"Sei {final_winx}!"
     bbox_title = draw.textbbox((0, 0), title_text, font=font_title)
     title_w = bbox_title[2] - bbox_title[0]
     title_x = (frame_w - title_w) // 2
     
-    # --- MODIFICA QUI: Portiamo il titolo in cima ---
-    title_y = 40  # Prima era 200
+    title_y = 40
 
     draw.text((title_x + 3, title_y + 3), title_text, font=font_title, fill=(50, 0, 50)) # ombra
     draw.text((title_x, title_y), title_text, font=font_title, fill=rgb_color) # testo winx
@@ -167,8 +165,7 @@ def draw_result_screen(frame, final_winx, final_perc):
     perc_w = bbox_perc[2] - bbox_perc[0]
     perc_x = (frame_w - perc_w) // 2
     
-    # --- MODIFICA QUI: Portiamo il sottotitolo subito sotto ---
-    perc_y = 105  # Prima era 265
+    perc_y = 105
 
     draw.text((perc_x + 2, perc_y + 2), perc_text, font=font_sub, fill=(0, 0, 0)) # ombra
     draw.text((perc_x, perc_y), perc_text, font=font_sub, fill=(255, 255, 255)) # testo Bianco
