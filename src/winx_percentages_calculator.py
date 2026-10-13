@@ -20,11 +20,11 @@ def calculate_color_distance(color1_rgb, color2_rgb):
 
 def calculate_winx_match(eye_color, hair_color, skin_color):
     print("\n--- AVVIO CALCOLO MAGIC WINX ---")
-    print(f"I tuoi colori -> Occhi: {eye_color}, Capelli: {hair_color}, Pelle: {skin_color}")
+    print(f"Colori -> Occhi: {eye_color}, Capelli: {hair_color}, Pelle: {skin_color}")
     
     best_match = None
     min_total_distance = float('inf')
-    results = [] # Ora usiamo una lista per immagazzinare tuple con i dettagli
+    results = [] # usa una lista per immagazzinare tuple con i dettagli
     
     for winx_name, profile in config.WINX_PROFILES_HEX.items():
         winx_eyes_rgb = hex_to_rgb(profile["eyes"])
@@ -35,32 +35,32 @@ def calculate_winx_match(eye_color, hair_color, skin_color):
         dist_hair = calculate_color_distance(hair_color, winx_hair_rgb)
         dist_skin = calculate_color_distance(skin_color, winx_skin_rgb)
         
-        # Distanza totale (pesata)
+        # distanza totale
         total_distance = (
             (dist_eyes * config.WEIGHTS["eyes"]) + 
             (dist_hair * config.WEIGHTS["hair"]) + 
             (dist_skin * config.WEIGHTS["skin"])
         )
         
-        # Percentuale complessiva
+        # percentuale complessiva
         affinity_percentage = max(0, 100 * (1 - (total_distance / config.MAX_POSSIBLE_DISTANCE)))
         
-        # Percentuali singole non pesate (per i dettagli a schermo)
+        # percentuali singole non pesate (per dettagli a schermo)
         perc_eyes = max(0, 100 * (1 - (dist_eyes / config.MAX_POSSIBLE_DISTANCE)))
         perc_hair = max(0, 100 * (1 - (dist_hair / config.MAX_POSSIBLE_DISTANCE)))
         perc_skin = max(0, 100 * (1 - (dist_skin / config.MAX_POSSIBLE_DISTANCE)))
         
-        # Creiamo un dizionario con i dettagli
+        # dizionario con i dettagli
         details = {"eyes": perc_eyes, "hair": perc_hair, "skin": perc_skin}
         
-        # Aggiungiamo alla lista: Nome, % Totale, Dettagli
+        # aggiunge alla lista: Nome, % Totale, Dettagli
         results.append((winx_name, affinity_percentage, details))
         
         if total_distance < min_total_distance:
             min_total_distance = total_distance
             best_match = winx_name
 
-    # Ordiniamo in base al secondo elemento (la percentuale totale)
+    # ordina in base al secondo elemento (la percentuale totale)
     sorted_results = sorted(results, key=lambda item: item[1], reverse=True)
     
     print("\n--- CLASSIFICA AFFINITÀ ---")

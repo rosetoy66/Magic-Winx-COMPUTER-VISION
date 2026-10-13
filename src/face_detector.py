@@ -12,7 +12,7 @@ face_mesh = None
 hands = None
 
 def init_models():
-    """Carica MediaPipe solo quando viene chiamato"""
+    # carica MediaPipe solo quando viene chiamato
     global face_mesh, hands
     import mediapipe as mp
     
@@ -83,12 +83,11 @@ def process_frame(frame):
         skin_color = get_dominant_color(skin_crop) if skin_crop.size > 0 else (0, 0, 0)
 
         # capelli
-        fx, fy = get_pt(10)       # Fronte alta
-        _, chin_y = get_pt(152)   # Mento
+        fx, fy = get_pt(10) # fronte alta
+        _, chin_y = get_pt(152) # mento
         
         face_height = abs(chin_y - fy)
         
-        # Gap portato a 0.17 per alzare ulteriormente il rettangolo sui capelli
         gap = int(face_height * 0.17)     
         box_h = int(face_height * 0.09)   
         box_w = int(face_height * 0.25)   
@@ -98,7 +97,7 @@ def process_frame(frame):
         raw_x1 = max(0, fx - (box_w // 2))
         raw_x2 = min(w, fx + (box_w // 2))
 
-        # Smoothing delle coordinate
+        # smoothing delle coordinate
         hair_box_buffer.append((raw_x1, raw_y1, raw_x2, raw_y2))
         if len(hair_box_buffer) > 10:
             hair_box_buffer.pop(0)
@@ -111,9 +110,9 @@ def process_frame(frame):
         hair_crop = frame[hair_y1:hair_y2, hair_x1:hair_x2]
         hair_color = get_dominant_color(hair_crop) if hair_crop.size > 0 else (0, 0, 0)
 
-        cv2.polylines(frame, [eye_pts], isClosed=True, color=(0, 255, 0), thickness=1) # verde: occhio
-        cv2.rectangle(frame, (skin_x1, skin_y1), (skin_x2, skin_y2), (0, 0, 255), 1)   # rosso: pelle
-        cv2.rectangle(frame, (hair_x1, hair_y1), (hair_x2, hair_y2), (255, 0, 0), 1)   # blu: capelli
+        cv2.polylines(frame, [eye_pts], isClosed=True, color=(0, 255, 0), thickness=1)
+        cv2.rectangle(frame, (skin_x1, skin_y1), (skin_x2, skin_y2), (0, 0, 255), 1)  
+        cv2.rectangle(frame, (hair_x1, hair_y1), (hair_x2, hair_y2), (255, 0, 0), 1) 
 
         colors = {
             "eyes": get_stable_color("eyes", eye_color),

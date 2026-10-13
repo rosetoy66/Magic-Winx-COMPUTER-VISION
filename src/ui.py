@@ -12,7 +12,7 @@ segmenter = None
 pose_detector = None
 
 def init_models():
-    """Carica MediaPipe solo quando viene chiamato"""
+    # carica MediaPipe solo quando viene chiamato
     global mp_pose, segmenter, pose_detector
     import mediapipe as mp
     
@@ -22,7 +22,7 @@ def init_models():
     mp_pose = mp.solutions.pose
     pose_detector = mp_pose.Pose(model_complexity=0, min_detection_confidence=0.5, min_tracking_confidence=0.5)
 
-# immagini cursore e scintille
+# immagini cursore e sparkles
 cursor_img = cv2.imread(config.CURSOR_PATH, cv2.IMREAD_UNCHANGED)
 sparkle_img = cv2.imread(config.SPARKLE_PATH, cv2.IMREAD_UNCHANGED)
 
@@ -31,7 +31,6 @@ if cursor_img is not None:
 if sparkle_img is not None:
     sparkle_img = cv2.resize(sparkle_img, config.SPARKLE_SIZE)
 
-# genera le scintille per l'intro una sola volta
 intro_sparkles = [
     {"x": random.randint(0, 640), "y": random.randint(0, 480), 
      "speed": random.uniform(1.0, 2.5), "offset": random.uniform(0, 2 * math.pi)} 
@@ -106,7 +105,6 @@ def draw_intro_screen(frame, state_time, fade_progress):
     text_x = (w - text_w) // 2
     text_y = (h - text_h) // 2
 
-    
     draw.multiline_text((text_x + 3, text_y + 3), text, font=font, fill=(100, 0, 100), align="center", spacing=spazio_righe)
     draw.multiline_text((text_x, text_y), text, font=font, fill=(255, 255, 255), align="center", spacing=spazio_righe)
 
@@ -141,7 +139,7 @@ def draw_result_screen(frame, final_winx, final_perc):
 
     frame_h, frame_w = frame.shape[:2]
 
-    # converte il frame in formato PIL (RGB)
+    # converte il frame in RGB
     pil_im = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
     draw = ImageDraw.Draw(pil_im)
     
@@ -152,11 +150,10 @@ def draw_result_screen(frame, final_winx, final_perc):
         font_title = ImageFont.load_default()
         font_sub = ImageFont.load_default()
 
-    # recupera il colore BGR e converte in RGB per PIL
+    # recupera il colore BGR e converte in RGB
     bgr_color = config.WINX_COLORS_BGR.get(final_winx, (0, 255, 255))
     rgb_color = (bgr_color[2], bgr_color[1], bgr_color[0])
 
-# testo "Sei..."
     title_text = f"Sei {final_winx}!"
     bbox_title = draw.textbbox((0, 0), title_text, font=font_title)
     title_w = bbox_title[2] - bbox_title[0]
@@ -167,7 +164,6 @@ def draw_result_screen(frame, final_winx, final_perc):
     draw.text((title_x + 3, title_y + 3), title_text, font=font_title, fill=(50, 0, 50)) # ombra
     draw.text((title_x, title_y), title_text, font=font_title, fill=rgb_color) # testo winx
 
-    # testo "affinita'..."
     perc_text = f"Affinita': {final_perc:.1f}%"
     bbox_perc = draw.textbbox((0, 0), perc_text, font=font_sub)
     perc_w = bbox_perc[2] - bbox_perc[0]
@@ -176,9 +172,9 @@ def draw_result_screen(frame, final_winx, final_perc):
     perc_y = 105
 
     draw.text((perc_x + 2, perc_y + 2), perc_text, font=font_sub, fill=(0, 0, 0)) # ombra
-    draw.text((perc_x, perc_y), perc_text, font=font_sub, fill=(255, 255, 255)) # testo Bianco
+    draw.text((perc_x, perc_y), perc_text, font=font_sub, fill=(255, 255, 255)) # testo bianco
 
-    # riconverte il frame in OpenCV (BGR)
+    # riconverte il frame in BGR
     frame = cv2.cvtColor(np.array(pil_im), cv2.COLOR_RGB2BGR)
     
     return frame
@@ -319,7 +315,6 @@ def draw_menu_button(frame):
         width=3
     )
 
-    # nuovo Testo
     text = "Avvia nuova trasformazione"
     bbox = draw.textbbox((0, 0), text, font=font_btn)
     text_w = bbox[2] - bbox[0]
@@ -571,7 +566,6 @@ def apply_wings_effect(frame, winx_name):
         img = cv2.imread(wings_path, cv2.IMREAD_UNCHANGED)
         WINGS_CACHE[winx_name] = img
 
-# non disegnava  i bottoni se non prende ali
     wings_img = WINGS_CACHE[winx_name]
     if wings_img is None: 
         safe_frame = draw_menu_button(frame)
@@ -581,7 +575,7 @@ def apply_wings_effect(frame, winx_name):
     h, w, _ = frame.shape
     frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     
-    # 1. Trova le spalle per posizionare le ali
+    # trova le spalle per posizionare le ali
     pose_results = pose_detector.process(frame_rgb)
     frame_with_wings = frame.copy()
     

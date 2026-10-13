@@ -12,9 +12,9 @@ class VoiceRecognizer:
         self.thread = None
         
         # carica il modello Vosk interamente in locale
-        print("[Sistema] Caricamento modello locale in corso...")
+        #print("[Sistema] Caricamento modello locale in corso...")
         self.model = Model(model_path)
-        print("[Sistema] Modello caricato con successo.")
+        #print("[Sistema] Modello caricato con successo.")
 
     def start(self):
         # avvia il thread di ascolto in background
@@ -47,7 +47,7 @@ class VoiceRecognizer:
                         frames_per_buffer=8192)
         stream.start_stream()
         
-        print("[Microfono] In ascolto. Pronuncia la frase magica!")
+        # print("Microfono in ascolto. Pronuncia la frase magica!")
         
         while self.running:
             if self.magic_word_detected:
@@ -64,7 +64,7 @@ class VoiceRecognizer:
                 text = result.get("text", "").lower()
                 
                 if text:
-                    print(f"[Speech-to-Text] Riconosciuto: {text}")
+                    # print(f" Riconosciuto: {text}")
                     
                     keywords_magic = ["magic", "magik", "magia", "megic"]
                     keywords_winx = ["winx", "wings", "vincs", "winks"]
@@ -74,5 +74,5 @@ class VoiceRecognizer:
                     found_vision = any(k in text for k in keywords_vision)
 
                     if found_magic_or_winx or found_vision:
-                        print("PAROLA MAGICA RILEVATA!")
+                        #print("PAROLA MAGICA RILEVATA!")
                         self.magic_word_detected = True

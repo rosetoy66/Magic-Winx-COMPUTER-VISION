@@ -15,7 +15,7 @@ try:
     snd2 = pygame.mixer.Sound(config.SOUND2_PATH)
     pygame.mixer.music.load(config.BGM_PATH)
 except Exception as e:
-    print(f"[Audio] Qualche file audio manca, ma il programma continua! Errore: {e}")
+    print(f"File audio mancante. Errore: {e}")
     snd1, snd2 = None, None
 
 def play_sfx(snd_obj):
@@ -38,15 +38,12 @@ def main():
         # disegna l'intro con tempo 0 per avere l'immagine fissa di base
         intro_frame = ui.draw_intro_screen(frame.copy(), 0.0, 0.0)
         cv2.imshow("Magic Winx: COMPUTER VISION!!", intro_frame)
-        cv2.waitKey(1) # Forza l'aggiornamento della finestra!
+        cv2.waitKey(1) # forza l'aggiornamento della finestra
 
-    print("Caricamento modelli magici in corso...")
+    #print("Caricamento modelli magici in corso...")
     
-    # carica i modelli pesanti. Lo schermo resterà con la tua grafica finché non finisce
     ui.init_models()
     face_detector.init_models()
-    
-    print("Modelli caricati! Avvio in corso...")
     
     voice_rec = VoiceRecognizer()
     voice_rec.start()
@@ -59,12 +56,14 @@ def main():
     all_results = []
     particles = [] 
     
-    # iniziamo a contare il tempo DA ADESSO, così l'animazione delle scintille parte ora
     intro_start_time = time.time()
     fade_start_time = None
     transformation_start_time = 0 
     analysis_start_time = 0 
     flash_start_time = None
+
+    prev_time = time.time()
+    fps_stats = {} # dizionario che memorizza gli FPS per ogni stato
 
     while True:
         ret, frame = cap.read()
@@ -83,7 +82,7 @@ def main():
             elapsed_state_time = current_time - intro_start_time
             fade_progress = 0.0
             
-            # Controllo voce e attivazione DISSOLVENZA
+            # controllo voce e attivazione dissolvenza
             if voice_rec.magic_word_detected and fade_start_time is None:
                 fade_start_time = current_time
                 
@@ -94,7 +93,6 @@ def main():
                     analysis_start_time = time.time()
                     particles.clear()
             
-            # Qui applichiamo la tua funzione che gestisce la dissolvenza (fade_progress)
             frame = ui.draw_intro_screen(frame, elapsed_state_time, fade_progress)
             
         elif state == "ANALISI":
@@ -157,6 +155,7 @@ def main():
             frame = ui.draw_result_screen(frame, final_winx, final_perc)
             frame = ui.draw_winx_images(frame, final_winx)
             frame = ui.draw_stats_button(frame)
+            frame = ui.draw_detected_colors(frame, colors)
             
             if flash_start_time is not None:
                 elapsed_flash = time.time() - flash_start_time
@@ -174,7 +173,7 @@ def main():
         elif state == "FILTRO_ALI":
             frame = ui.apply_wings_effect(frame, final_winx)
 
-        # Gestione dito e collisione
+        # gestione dito e collisione
         if state not in ["INTRO", "ANALISI"] and finger_pos:
             fx, fy = finger_pos
             particles.append([fx, fy, 1.0])
@@ -225,8 +224,28 @@ def main():
 
         if frame is not None:
             cv2.imshow("Magic Winx: COMPUTER VISION!!", frame)
+
         
         # Tasti e Debug
+        
+        curr_time = time.time()
+        diff = curr_time - prev_time
+        fps = 1.0 / diff if diff > 0 else 0
+        prev_time = curr_time
+
+        if fps > 0:
+            # se si entra in un nuovo stato, viene creato il nuovo elemento nel dizionario
+            if state not in fps_stats:
+                fps_stats[state] = {'sum': 0.0, 'count': 0}
+            
+            # aggiunge gli fps correnti e aumentiamo il contatore
+            fps_stats[state]['sum'] += fps
+            fps_stats[state]['count'] += 1
+            
+            # calcola la media degli fps
+            fps_medio = fps_stats[state]['sum'] / fps_stats[state]['count']
+            #print(f"Stato: {state} | FPS Istantanei: {fps:.1f} | FPS MEDI: {fps_medio:.1f}")
+
         key = cv2.waitKey(1) & 0xFF
         if key == ord('q'):
             voice_rec.stop()

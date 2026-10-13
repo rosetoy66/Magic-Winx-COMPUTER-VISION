@@ -32,7 +32,7 @@ BORDER_PINK_BGR = (140, 0, 237)
 SHADOW_RGB = (70, 30, 70)
 TEXT_PINK_RGB = (237, 0, 140)
 
-# Colori per il Bottone Statistiche
+# colori per il Bottone Statistiche
 BTN_STATS_BG_RGB = (180, 194, 221)
 BTN_STATS_PINK_RGB = (237, 3, 124)
 BTN_STATS_SHADOW_RGB = (0, 0, 0)
@@ -56,12 +56,11 @@ WINX_IMAGES = {
     "Tecna": "./assets/tecna.png"
 }
 
-# --- TRASFORMAZIONE 
+# video trasformazione 
 BG_VIDEO_PATH = "./assets/magic_bg.mp4"
 TINT_COLOR_BGR = (220, 130, 255)       #colore
 
-# --- CLASSIFICA E FILTRO ALI ---
-# Colori BGR specifici per il grafico a barre di ogni Winx
+# BGR per il grafico a barre di ogni Winx
 WINX_COLORS_BGR = {
     "Bloom": (33, 40, 179),    # Rosso/Blu
     "Stella": (36, 161, 209),  # Giallo/Arancio
@@ -71,13 +70,13 @@ WINX_COLORS_BGR = {
     "Tecna": (114, 43, 133)    # Viola
 }
 
-# Coordinate dei nuovi bottoni
+# coordinate dei nuovi bottoni
 BTN_STATISTICHE = (40, 400, 200, 460)
-BTN_AVANTI = (460, 400, 620, 460) # Per passare da CLASSIFICA a FILTRO_ALI
-BTN_MENU = (20, 20, 380, 80) #per menu da filtro ali
+BTN_AVANTI = (460, 400, 620, 460)
+BTN_MENU = (20, 20, 380, 80) 
 BTN_ESCI_ALI = (480, 20, 620, 80)
 
-WINGS_PATH = "./assets/wings.png"     # PNG trasparente delle ali da fata
+WINGS_PATH = "./assets/wings.png"  
 
 WINX_WINGS_PATHS = {
     "Bloom": "assets/bloom_ali.png",
@@ -90,7 +89,7 @@ WINX_WINGS_PATHS = {
 
 WINX_GROUP_PATH = "./assets/winx.png"
 
-# Mappatura dei video di trasformazione in base alla Winx assegnata
+# video di trasformazione in base alla Winx assegnata
 WINX_VIDEOS_PATHS = {
     "Bloom": "./assets/bloom_video.mp4",
     "Stella": "./assets/stella_video.mp4",
@@ -100,9 +99,9 @@ WINX_VIDEOS_PATHS = {
     "Aisha": "./assets/aisha_video.mp4"
 }
 
-# --- AUDIO ---
-SOUND1_PATH = "./assets/suono1.mp3" # Suono "positivo" (Avvia, Avanti, ecc.)
-SOUND2_PATH = "./assets/suono2.mp3" # Suono di uscita/reset
+# audio
+SOUND1_PATH = "./assets/suono1.mp3" 
+SOUND2_PATH = "./assets/suono2.mp3" 
 BGM_PATH = "./assets/musica_trasformazione.mp3"
 
-model_path = "./assets/model_it"  # percorso del modello Vosk in italiano
+model_path = "./assets/model_it" 
