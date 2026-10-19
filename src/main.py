@@ -74,7 +74,7 @@ def main():
         colors = None
         
         if state != "INTRO":
-            frame, finger_pos, colors = face_detector.process_frame(frame.copy())
+            finger_pos, colors = face_detector.process_frame(frame.copy())
 
         # GESTIONE STATI
         if state == "INTRO":
@@ -155,7 +155,7 @@ def main():
             frame = ui.draw_result_screen(frame, final_winx, final_perc)
             frame = ui.draw_winx_images(frame, final_winx)
             frame = ui.draw_stats_button(frame)
-            frame = ui.draw_detected_colors(frame, colors)
+            #frame = ui.draw_detected_colors(frame, colors)
             
             if flash_start_time is not None:
                 elapsed_flash = time.time() - flash_start_time

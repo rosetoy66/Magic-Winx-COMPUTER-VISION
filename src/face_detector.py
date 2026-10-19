@@ -120,4 +120,4 @@ def process_frame(frame):
             "skin": get_stable_color("skin", skin_color)
         }
         
-    return frame, finger_pos, colors
+    return  finger_pos, colors
