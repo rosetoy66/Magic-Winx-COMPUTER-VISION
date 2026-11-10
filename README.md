@@ -2,7 +2,7 @@
 
 An interactive real-time computer vision application built in Python that analyzes facial features (eye color, hair color, and skin tone), matches them against Winx character color profiles, and applies video transformation effects and AR fairy wings using touchless hand tracking and offline voice recognition.
 
-
+This project was developed for academic purposes as part of the AI LAB: COMPUTER VISION AND NLP exam.
 
 ## Key Features
 
